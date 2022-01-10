@@ -132,10 +132,40 @@ pub const ElementType = enum {
     // Deprecated tags ignored.
 };
 
+pub const Attribute = struct {
+    key: []const u8,
+    value: []const u8,
+};
+
 pub const Content = union(enum) {
     text: []const u8,
     element: Element,
 };
 
 Type: ElementType,
-content: []Content,
+attributes: []Attribute,  // TODO: HashMap this probably
+children: []Content,
+
+// TODO: Implement this as a format function instead, if the specifier is "html" then do this, otherwise print debug info
+pub fn toHtml(self: Element, writer: anytype) !void {
+    for (self.children) |child| {
+        switch (child) {
+            .text => |text| try writer.writeAll(text),
+            .element => |element| {
+                try writer.writeByte('<');
+                try writer.writeAll(@tagName(element.Type));
+                for (self.attributes) |attribute| {
+                    try writer.writeByte(' ');
+                    try writer.writeAll(attribute.key);
+                    try writer.writeByte('=');
+                    try writer.writeAll(attribute.value);
+                }
+                try writer.writeByte('>');
+                try element.toHtml(writer);
+                try writer.writeByte('<');
+                try writer.writeAll(@tagName(element.Type));
+                try writer.writeByte('>');
+            ,
+        }
+    }
+}
