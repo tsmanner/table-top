@@ -32,3 +32,16 @@ pub const Shield = struct {
     ac: u32,
     weight: f32, // Pounds
 };
+
+pub const studded_leather = Armor{
+    .@"type" = .Light,
+    .cost = Currency{ .gold = 45 },
+    .ac = .{ .base = 12, .max_dex = 5 },
+    .weight = 13,
+};
+
+pub const shield = Shield{
+    .cost = Currency{ .gold = 10 },
+    .ac = 2,
+    .weight = 6,
+};

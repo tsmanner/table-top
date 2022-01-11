@@ -57,7 +57,9 @@ const Weapon = weapons.Weapon;
 const tools = @import("tools.zig");
 const Tool = tools.Tool;
 
-const CharacterLevel = struct {
+const Element = @import("root").web.html.Element;
+
+pub const CharacterLevel = struct {
     str: u32 = 0,
     dex: u32 = 0,
     con: u32 = 0,
@@ -99,7 +101,7 @@ test "abilityModifier" {
     try std.testing.expectEqual(abilityModifier(20), 5);
 }
 
-const Character = struct {
+pub const Character = struct {
     name: []const u8,
     str: u32,
     dex: u32,
@@ -138,19 +140,6 @@ const Character = struct {
     }
 };
 
-const studded_leather = Armor{
-    .@"type" = .Light,
-    .cost = Currency{ .gold = 45 },
-    .ac = .{ .base = 12, .max_dex = 5 },
-    .weight = 13,
-};
-
-const shield = Shield{
-    .cost = Currency{ .gold = 10 },
-    .ac = 2,
-    .weight = 6,
-};
-
 test "Character.ac" {
     const char = Character{
         .name = "foo",
@@ -160,33 +149,29 @@ test "Character.ac" {
         .int = 16,
         .wis = 12,
         .cha = 10,
-        .armor = studded_leather,
-        .shield = shield,
+        .armor = armors.studded_leather,
+        .shield = armors.shield,
     };
     try std.testing.expectEqual(char.ac(), 19);
 }
 
-pub fn main() !void {
-    const turminder_xuss = Character{
-        .name = "Turminder Xuss",
-        .str = 10,
-        .dex = 16,
-        .con = 10,
-        .int = 16,
-        .wis = 12,
-        .cha = 10,
-        .levels = &[_]CharacterLevel{
-            .{ .dex = 2 },
-            .{ .dex = 1 },
-            .{ .dex = 1 },
-        },
-        .armor = studded_leather,
-        .shield = shield,
-    };
-    var out_buf: [1024]u8 = undefined;
-    var slice_stream = std.io.fixedBufferStream(&out_buf);
-    try std.json.stringify(turminder_xuss, std.json.StringifyOptions{}, slice_stream.writer());
-    std.log.info("{s}", .{slice_stream.getWritten()});
-    std.log.info("{}", .{turminder_xuss.ac()});
-    std.log.info("{}", .{turminder_xuss.dexScore()});
+pub fn charToHtml(char: *const Character, allocator: std.mem.Allocator) !Element {
+    var root = Element.init(null, .div, allocator);
+    _ = try (try root.addElement(.h1)).addText(char.name);
+    var ability_table = try root.addElement(.table);
+    var thead = try ability_table.addElement(.thead);
+    _ = try (try thead.addElement(.td)).addText("Str");
+    _ = try (try thead.addElement(.td)).addText("Dex");
+    _ = try (try thead.addElement(.td)).addText("Con");
+    _ = try (try thead.addElement(.td)).addText("Int");
+    _ = try (try thead.addElement(.td)).addText("Wis");
+    _ = try (try thead.addElement(.td)).addText("Cha");
+    var tr = try ability_table.addElement(.tr);
+    _ = try (try tr.addElement(.td)).addText(try std.fmt.allocPrintZ(allocator, "{}", .{char.str}));
+    _ = try (try tr.addElement(.td)).addText(try std.fmt.allocPrintZ(allocator, "{}", .{char.dex}));
+    _ = try (try tr.addElement(.td)).addText(try std.fmt.allocPrintZ(allocator, "{}", .{char.con}));
+    _ = try (try tr.addElement(.td)).addText(try std.fmt.allocPrintZ(allocator, "{}", .{char.int}));
+    _ = try (try tr.addElement(.td)).addText(try std.fmt.allocPrintZ(allocator, "{}", .{char.wis}));
+    _ = try (try tr.addElement(.td)).addText(try std.fmt.allocPrintZ(allocator, "{}", .{char.cha}));
+    return root;
 }
