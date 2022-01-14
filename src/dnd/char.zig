@@ -57,7 +57,8 @@ const Weapon = weapons.Weapon;
 const tools = @import("tools.zig");
 const Tool = tools.Tool;
 
-const Element = @import("root").web.html.Element;
+const tt = @import("root");
+const Element = tt.web.html.Element;
 
 pub const CharacterLevel = struct {
     str: u32 = 0,
@@ -174,4 +175,19 @@ pub fn charToHtml(char: *const Character, allocator: std.mem.Allocator) !Element
     _ = try (try tr.addElement(.td)).addText(try std.fmt.allocPrintZ(allocator, "{}", .{char.wis}));
     _ = try (try tr.addElement(.td)).addText(try std.fmt.allocPrintZ(allocator, "{}", .{char.cha}));
     return root;
+}
+
+test "charToHtml" {
+    const char = Character{
+        .name = "foo",
+        .str = 10,
+        .dex = 20,
+        .con = 10,
+        .int = 16,
+        .wis = 12,
+        .cha = 10,
+        .armor = armors.studded_leather,
+        .shield = armors.shield,
+    };
+    _ = charToHtml(char, std.testing.allocator);
 }

@@ -1,5 +1,5 @@
 const std = @import("std");
-pub const Element = @import("Element.zig");
+const Parser = @import("Parser.zig");
 
 test {
     std.testing.refAllDecls(@This());
