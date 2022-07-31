@@ -1,4 +1,4 @@
-fn SliceIterator(comptime T: type) type {
+pub fn SliceIterator(comptime T: type) type {
     return struct {
         const Self = @This();
         slice: []const T,

@@ -57,8 +57,7 @@ const Weapon = weapons.Weapon;
 const tools = @import("tools.zig");
 const Tool = tools.Tool;
 
-const tt = @import("root");
-const Element = tt.web.html.Element;
+const Element = @import("web").html.Element;
 
 pub const CharacterLevel = struct {
     str: u32 = 0,
@@ -177,17 +176,44 @@ pub fn charToHtml(char: *const Character, allocator: std.mem.Allocator) !Element
     return root;
 }
 
-test "charToHtml" {
-    const char = Character{
-        .name = "foo",
-        .str = 10,
-        .dex = 20,
-        .con = 10,
-        .int = 16,
-        .wis = 12,
-        .cha = 10,
-        .armor = armors.studded_leather,
-        .shield = armors.shield,
-    };
-    _ = charToHtml(char, std.testing.allocator);
-}
+// pub const sql = struct {
+//     pub fn zigToSql(comptime T: type) []const u8 {
+//         return switch (@typeInfo(T)) {
+//             .Int => |int| switch (int.bits) {
+//                 1...16 => "smallint",
+//                 17...32 => "int",
+//                 32...64 => "bigint",
+//                 else => @compileError("Int too big!"),
+//             },
+//             .Pointer => |pointer| switch (pointer.size) {
+//                 .Slice => switch (pointer.child) {
+//                     u8 => "text",
+//                     else => "blob", //@compileError("Unsupported Pointer child Type '" ++ @typeName(T) ++ "'"),
+//                 },
+//                 else => @compileError("Unsupported Pointer Type '" ++ @typeName(T) ++ "'"),
+//             },
+//             else => @compileError("Unsupported Type '" ++ @typeName(T) ++ "'"),
+//         };
+//     }
+
+//     pub fn Table(comptime T: type) type {
+//         return struct {
+//             pub fn create() []const u8 {
+//                 comptime var s: []const u8 = "CREATE TABLE " ++ @typeName(T) ++ "(";
+//                 inline for (std.meta.fields(T)) |field, i| {
+//                     const typename = comptime zigToSql(field.field_type);
+//                     if (i > 0) s = s ++ ", ";
+//                     s = s ++ field.name ++ " " ++ typename;
+//                 }
+//                 return s ++ ");";
+//             }
+//         };
+//     }
+// };
+
+// test "sql" {
+//     const table = "CREATE TABLE character (name text, str int, dex int, con int, int int, wis int, cha  int);";
+//     const t = sql.Table(Character);
+//     std.testing.expectEqualStrings(table, t);
+//     // std.testing.expectEqualStrings(query);
+// }
