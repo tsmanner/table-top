@@ -25,17 +25,3 @@ pub fn ErrorsFrom(comptime fs: anytype) type {
     }
     return Errors;
 }
-
-// const TestErrors = error{ Foo, Bar };
-
-// fn foo() !void {
-//     return TestErrors.Foo;
-// }
-
-// fn bar() !void {
-//     return TestErrors.Bar;
-// }
-
-// test "ErrorsFrom" {
-//     try std.testing.expectEqual(TestErrors, ErrorsFrom(.{ foo, bar }));
-// }
